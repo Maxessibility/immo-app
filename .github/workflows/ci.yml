@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install
+        run: npm install
+      - name: Client lint
+        run: npm --prefix client run lint
+      - name: Client build
+        run: npm --prefix client run build
+      - name: Server build
+        run: npm --prefix server run build
