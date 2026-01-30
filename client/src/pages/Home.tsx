@@ -1,5 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  Alert,
+  Box,
+  Card,
+  CardActions,
+  CardContent,
+  Chip,
+  Stack,
+  Typography,
+  Button,
+} from "@mui/material";
 import type { Property } from "../types/property";
 import { fetchProperties } from "../services/api";
 
@@ -15,30 +26,53 @@ export default function Home() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p>Chargement des annonces…</p>;
-  if (error) return <p role="alert">Erreur : {error}</p>;
+  if (loading) return <Typography>Chargement des annonces…</Typography>;
+  if (error) return <Alert severity="error">Erreur : {error}</Alert>;
 
   return (
-    <section aria-labelledby="listing-title">
-      <h1 id="listing-title">Annonces disponibles</h1>
-      <div className="grid">
+    <Box component="section" aria-labelledby="listing-title">
+      <Typography id="listing-title" variant="h4" gutterBottom>
+        Annonces disponibles
+      </Typography>
+      <Box
+        sx={{
+          display: "grid",
+          gap: 2,
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "1fr 1fr",
+            md: "1fr 1fr 1fr",
+          },
+        }}
+      >
         {items.map((p) => (
-          <article key={p.id} className="card">
-            <div className="card__body">
-              <h2 className="card__title">{p.title}</h2>
-              <p className="card__meta">
-                {p.surface} m² · {p.rooms} pièces · {p.type === "HOUSE" ? "Maison" : "Appartement"}
-              </p>
-              <p className="card__price">{p.price.toLocaleString()} €</p>
-            </div>
-            <div className="card__actions">
-              <Link to={`/properties/${p.id}`} className="button">
+          <Card key={p.id} variant="outlined">
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                {p.title}
+              </Typography>
+              <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+                <Chip label={p.type === "HOUSE" ? "Maison" : "Appartement"} size="small" />
+                <Chip label={`${p.surface} m²`} size="small" />
+                <Chip label={`${p.rooms} pièces`} size="small" />
+              </Stack>
+              <Typography variant="h5" fontWeight={700}>
+                {p.price.toLocaleString()} €
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Button
+                component={Link}
+                to={`/properties/${p.id}`}
+                size="small"
+                variant="contained"
+              >
                 Voir le détail
-              </Link>
-            </div>
-          </article>
+              </Button>
+            </CardActions>
+          </Card>
         ))}
-      </div>
-    </section>
+      </Box>
+    </Box>
   );
 }
