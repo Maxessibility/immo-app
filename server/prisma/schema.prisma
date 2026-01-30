@@ -1,11 +1,49 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Property {
+  id          String          @id @default(cuid())
+  title       String
+  description String?
+  price       Int
+  surface     Int
+  rooms       Int
+  bedrooms    Int?
+  type        PropertyType
+  status      PropertyStatus
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  images      PropertyImage[]
+}
+
+model PropertyImage {
+  id         String   @id @default(cuid())
+  url        String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId String
+  createdAt  DateTime @default(now())
+}
+
+enum PropertyType {
+  HOUSE
+  APARTMENT
+}
+
+enum PropertyStatus {
+  SALE
+  RENT
 }
